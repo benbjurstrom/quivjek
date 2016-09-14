@@ -1,4 +1,6 @@
 #Quivjek: A Jekyll plugin for seamless publication of Quiver notebooks
+[![Build Status](https://travis-ci.org/benbjurstrom/quivjek.svg?branch=master)](https://travis-ci.org/benbjurstrom/quivjek)
+
 Quivjek is a Jekyll plugin that automatically copies a specified Quiver notebook to your Jekyll _posts folder whenever the jekyll build command runs. Quivjek also copies and properly links any images contained in a Quiver note to your Jekyll images folder.
 
 ## Installation
