@@ -11,7 +11,7 @@ Gem::Specification.new do |spec|
 
   spec.summary       = "A Jekyll plugin for seamless publication of Quiver notebooks"
   spec.description   = "A Jekyll plugin that automatically copies a Quiver notebook to your Jekyll _posts folder whenever the jekyll build command runs. Quivjek also copies and properly links any images contained in a Quiver note to your Jekyll images folder."
-  spec.homepage      = "https://github.com/benbjurstrom/keyburner"
+  spec.homepage      = "https://github.com/benbjurstrom/quivjek"
   spec.license       = "MIT"
 
   spec.files         = `git ls-files -z`.split("\x0").reject { |f| f.match(%r{^(test|spec|features)/}) }
