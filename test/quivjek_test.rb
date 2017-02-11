@@ -17,11 +17,14 @@ class QuivjekTest < Minitest::Test
 
     # verify the expected markdown and image files were created
     post1  = @dir + '/resources/_posts/quiver/2016-09-14-this-is-an-example-post.md'
-    post2  = @dir + '/resources/_posts/quiver/2016-09-14-this-is-another-example-post.md'
+    post2  = @dir + '/resources/_posts/quiver/2016-12-12-this-is-an-example-post-with-front-matter.md'
     post3  = @dir + '/resources/_posts/quiver/2016-09-14-this-this-post-is-a-draft.md'
     image1 = @dir + '/resources/images/q/big-claw-puppy-on-wood-floor.jpg'
     image2 = @dir + '/resources/images/q/dog-rides-with-human-on-bicycle-in-japan.jpg'
-    assert [File.exist?(post1), File.exist?(post2), File.exist?(image1), File.exist?(image2)]
+    assert File.exist?(post1)
+    assert File.exist?(post2)
+    assert File.exist?(image1)
+    assert File.exist?(image2)
     assert_equal false, File.exist?(post3)
 
     # verify the image urls within the post were modified

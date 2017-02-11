@@ -4,6 +4,8 @@ require "json"
 require "fileutils"
 require "quivjek/version"
 require "jekyll"
+require "front_matter_parser"
+require "yaml"
 
 Jekyll::Hooks.register :site, :after_init do |site|
   q = Quivjek.new(site)
@@ -48,29 +50,51 @@ class Quivjek
   end
 
   def copy_note(note_dir)
-    metapath    = File.join(note_dir, "meta.json")
-    contentpath = File.join(note_dir, "content.json")
-    imagepath   = File.join(note_dir, "resources")
-
-    showhelp("meta.json doesn't exist") unless File.exist? metapath
-    metajson = JSON.parse(File.read(metapath))
+    # Load the quiver note meta.json file.
+    metajson = load_meta_json(note_dir)
 
     # Skip this note if tagged with draft
     metajson["tags"].each do |tag|
       return if tag == 'draft'
     end
 
-    showhelp(contentpath + "content.json doesn't exist") unless File.exist? contentpath
-
+    # Copy the notes images to the jekyll directory
+    imagepath    = File.join(note_dir, "resources")
     self.copy_note_images(imagepath) if File.exist?(imagepath)
 
-    filename = self.get_filename(metajson)
-    output   = self.add_frontmatter(metajson)
+    # Load the quiver note content.json file and merge its cells.
+    contentjson = load_content_json(note_dir)
+    content     = self.merge_cells(contentjson, '')
 
-    contentjson = JSON.parse(File.read(contentpath))
-    output      = self.add_content(contentjson, output)
+    # Parse out optional frontmatter from the content
+    parsed      = FrontMatterParser.parse(content)
+    fm          = parsed.front_matter
+    content     = parsed.content
 
+    # Set some default frontmatter and combine with content
+    fm = set_default_frontmatter(fm, metajson)
+    output = fm.to_yaml + "---\n" + content
+
+    # Write the markdown file to the jekyll dir
+    filename    = self.get_filename(fm)
     File.open(File.join(@post_dir, filename), "w") { |file| file.write(output) }
+
+  end
+
+  def load_meta_json(dir)
+    metapath    = File.join(dir, "meta.json")
+    showhelp("meta.json doesn't exist") unless File.exist? metapath
+    metajson = JSON.parse(File.read(metapath))
+
+    return metajson
+  end
+
+  def load_content_json(dir)
+    contentpath = File.join(dir, "content.json")
+    showhelp(contentpath + "content.json doesn't exist") unless File.exist? contentpath
+    contentjson = JSON.parse(File.read(contentpath))
+
+    return contentjson
   end
 
   def copy_note_images(imagepath)
@@ -83,35 +107,37 @@ class Quivjek
 
   end
 
-  def get_filename(metajson)
-    title = metajson["title"].gsub(" ", "-").downcase
+  def get_filename(fm)
+    title = fm["title"].gsub(" ", "-").downcase
+    date = DateTime.parse(fm["date"])
 
-    created_at_date = DateTime.strptime(metajson["created_at"].to_s, "%s")
-    day = "%02d" % created_at_date.day
-    month = "%02d" % created_at_date.month
-    year = created_at_date.year
+    day = "%02d" % date.day
+    month = "%02d" % date.month
+    year = date.year
 
     return "#{year}-#{month}-#{day}-#{title}.md"
   end
 
-  def add_frontmatter(metajson)
-    tags   = metajson["tags"].map { |tag| "    - #{tag}" }.join("\n")
-    output = <<eos
----
-layout: post
-title: "#{metajson["title"]}"
-eos
+  def set_default_frontmatter(fm, metajson)
 
-    if !tags.empty?
-      output << "tags:\n#{tags}\n"
+    # If certain frontmatter is missing default to quiver metadata
+    fm['title'] = metajson['title']      unless fm['title']
+
+    if !fm.key?("date")
+      date = DateTime.strptime(metajson["created_at"].to_s, "%s")
+      fm['date'] = date.strftime('%Y-%m-%d')
     end
 
-    output << "---\n\n"
+    tags   = metajson["tags"].map { |tag| "    - #{tag}" }.join("\n")
+    if !tags.empty?
+      fm['tags']  = tags
+    end
 
-    return output
+    return fm
+
   end
 
-  def add_content(contentjson, output)
+  def merge_cells(contentjson, output)
     contentjson["cells"].each do |cell|
       case cell["type"]
         when "code"
