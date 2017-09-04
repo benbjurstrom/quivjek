@@ -34,6 +34,13 @@ class QuivjekTest < Minitest::Test
 
   end
 
+  def test_load_post_metadata
+    path  = @dir +  '/resources/example.qvnotebook/761ED65C-FE71-44A3-989C-0A8EA3C7F781.qvnote'
+    metajson = @quivjek.load_meta_json(path)
+    result = @quivjek.set_default_frontmatter({}, metajson)
+    assert_equal ['one', 'another one'], result["tags"]
+  end
+
   def get_site_mock()
 
     mock = MiniTest::Mock.new

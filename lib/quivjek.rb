@@ -42,8 +42,6 @@ class Quivjek
 
   end
 
-  protected
-
   def showhelp(message)
     puts message.red + "\n"
     exit
@@ -128,10 +126,7 @@ class Quivjek
       fm['date'] = date.strftime('%Y-%m-%d')
     end
 
-    tags   = metajson["tags"].map { |tag| "    - #{tag}" }.join("\n")
-    if !tags.empty?
-      fm['tags']  = tags
-    end
+    fm['tags']  = metajson["tags"]
 
     return fm
 

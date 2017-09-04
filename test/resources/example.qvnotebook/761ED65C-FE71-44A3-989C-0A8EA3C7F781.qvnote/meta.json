@@ -1,7 +1,8 @@
 {
   "created_at" : 1473817582,
   "tags" : [
-
+    "one",
+    "another one"
   ],
   "title" : "This is another example post",
   "updated_at" : 1473817853,
