@@ -8,8 +8,12 @@ require "front_matter_parser"
 require "yaml"
 
 Jekyll::Hooks.register :site, :after_init do |site|
-  q = Quivjek.new(site)
-  q.load_posts_from_quiver
+
+  if (ENV['APP_ENV'] != 'production')
+    q = Quivjek.new(site)
+    q.load_posts_from_quiver
+  end
+
 end
 
 class Quivjek

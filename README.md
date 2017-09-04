@@ -51,6 +51,8 @@ Run `jekyll build` and quivjek will automatically copy your Quiver notes to your
 
 1. When an image is added to a markdown cell, Quiver renames the file and sets the original file name as the image tag's alt attribute. For example the image `big-claw-puppy-on-wood-floor.jpg` becomes `![big-claw-puppy-on-wood-floor.jpg](quiver-image-url/642370E09A291BC1601CFD68B44A5C16.jpg)`. For SEO purposes quivjek reverses this process by renaming the image to whatever is found in your alt tag. Therefore it is recommended your alt tags are lowercase, slug-ified, unique, and end in the image file extension.
 
+1. You can prevent quivjek from running by setting  ENV['APP_ENV'] = 'production'
+
 ## Development
 After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake test` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
 
