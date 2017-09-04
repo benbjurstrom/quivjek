@@ -69,7 +69,7 @@ class Quivjek
     content     = self.merge_cells(contentjson, '')
 
     # Parse out optional frontmatter from the content
-    parsed      = FrontMatterParser.parse(content)
+    parsed      = FrontMatterParser::Parser.new(:md).call(content)
     fm          = parsed.front_matter
     content     = parsed.content
 
